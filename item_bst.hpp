@@ -26,7 +26,7 @@ class ItemBST {
     Node* deleteNode(Node* node, const std::string& itemID);
     Node* search(Node* node, const std::string& itemID);
     Node* findMin(Node* node);
-    Node* inOrder(Node* node);
+    void inOrder(Node* node);
     void searchByName(Node* node, const std::string& itemName);
     void destroyTree(Node* node);
     int countNodes(Node* node);

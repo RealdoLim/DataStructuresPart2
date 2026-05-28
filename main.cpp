@@ -16,11 +16,11 @@
 #include "shared_types.hpp"
 #include "system_config.hpp"
 #include "order_queue.hpp"      
+#include "item_bst.hpp"
 
 // Members 2-5: add your includes here when ready.
 // #include "robot_circular_queue.hpp"   // Member 2
 // #include "path_stack.hpp"             // Member 3
-// #include "item_bst.hpp"               // Member 4
 // #include "warehouse_tree.hpp"         // Member 5
 
 // Small input helper used by every interactive menu option.
@@ -73,28 +73,30 @@ namespace robot_stub {
     }
 }
 
-// STUB - MEMBER 4 - ITEM SEARCH AND MANAGEMENT MODULE
-// Replace with calls to your ItemBST.
+// MEMBER 4 - ITEM SEARCH AND MANAGEMENT MODULE
+ItemBST inventory;
+
+static void loadSampleItems() {
+    inventory.insertItem({"I001", "Laptop Charger", {"A", "1", "2"}, 10});
+    inventory.insertItem({"I002", "Wireless Mouse", {"B", "2", "1"}, 5});
+    inventory.insertItem({"I003", "Keyboard",       {"C", "1", "3"}, 8});
+    std::cout << "[Init] Loaded 3 sample items." << std::endl;
+}
+
 namespace item_stub {
-    // Three hardcoded items matching the demo scenario (plan §10).
-    // Returns true if found and fills outItem; false otherwise.
     bool searchItemByID(const std::string& itemID, int requestedQty, Item& outItem) {
-        if (itemID == "I001") {
-            outItem = {"I001", "Laptop Charger", {"Zone A", "Aisle 1", "Shelf 2"}, 10};
-        } else if (itemID == "I002") {
-            outItem = {"I002", "Wireless Mouse", {"Zone B", "Aisle 2", "Shelf 1"}, 5};
-        } else if (itemID == "I003") {
-            outItem = {"I003", "Keyboard",       {"Zone C", "Aisle 1", "Shelf 3"}, 8};
-        } else {
-            std::cout << "[Item Search - STUB] Item not found." << std::endl;
+        if (!inventory.searchItembyID(itemID, outItem)) {
+            std::cout << "[Item Search] Item not found." << std::endl;
             return false;
         }
+
         if (requestedQty > outItem.stockQuantity) {
-            std::cout << "[Item Search - STUB] Insufficient stock for "
+            std::cout << "[Item Search] Insufficient stock for "
                       << itemID << "." << std::endl;
             return false;
         }
-        std::cout << "[Item Search - STUB] Found " << outItem.itemName
+
+        std::cout << "[Item Search] Found " << outItem.itemName
                   << " at " << outItem.location.zone << ", "
                   << outItem.location.aisle << ", "
                   << outItem.location.shelf << "." << std::endl;
@@ -102,15 +104,208 @@ namespace item_stub {
     }
 
     void reduceStock(const std::string& itemID, int quantity) {
-        std::cout << "[Item Search - STUB] Stock of " << itemID
+        Item item;
+        if (!inventory.searchItembyID(itemID, item)) {
+            std::cout << "[Item Search] Item not found." << std::endl;
+            return;
+        }
+
+        int newQuantity = item.stockQuantity - quantity;
+        if (newQuantity < 0) {
+            newQuantity = 0;
+        }
+
+        inventory.updateStock(itemID, newQuantity);
+        std::cout << "[Item Search] Stock of " << itemID
                   << " reduced by " << quantity << "." << std::endl;
     }
 
     void displayItems() {
-        std::cout << "\n=== Item List (STUB - Member 4) ===" << std::endl;
-        std::cout << "I001  Laptop Charger   Zone A, Aisle 1, Shelf 2   Stock: 10" << std::endl;
-        std::cout << "I002  Wireless Mouse   Zone B, Aisle 2, Shelf 1   Stock: 5"  << std::endl;
-        std::cout << "I003  Keyboard         Zone C, Aisle 1, Shelf 3   Stock: 8"  << std::endl;
+        inventory.displayAllItems();
+    }
+}
+
+static void printItem(const Item& item) {
+    std::cout << "------------------------------------------------------------" << std::endl;
+    std::cout << "Item ID        : " << item.itemID << std::endl;
+    std::cout << "Item Name      : " << item.itemName << std::endl;
+    std::cout << "Stock Quantity : " << item.stockQuantity << std::endl;
+    std::cout << "Location       : "
+              << item.location.zone << ", "
+              << item.location.aisle << ", "
+              << item.location.shelf << std::endl;
+    std::cout << "------------------------------------------------------------" << std::endl;
+}
+
+static void menuItemManagement() {
+    int choice = -1;
+
+    while (choice != 8) {
+        std::cout << "\n===== ITEM SEARCH AND MANAGEMENT =====\n"
+                  << "1. Display all items and total count\n"
+                  << "2. Search item by ID\n"
+                  << "3. Search item by name\n"
+                  << "4. Insert item\n"
+                  << "5. Update stock\n"
+                  << "6. Delete item\n"
+                  << "7. Display low stock items\n"
+                  << "8. Exit item menu\n"
+                  << "Choice: ";
+
+        if (!(std::cin >> choice)) {
+            std::cout << "Invalid input. Please enter a number from 1 to 8." << std::endl;
+            clearInputBuffer();
+            continue;
+        }
+        clearInputBuffer();
+
+        if (choice == 1) {
+            inventory.displayAllItems();
+            std::cout << "Total Inventory Count: "
+                      << inventory.getTotalItems() << std::endl;
+        } else if (choice == 2) {
+            std::string itemID;
+            Item item;
+
+            std::cout << "Enter Item ID: ";
+            std::getline(std::cin, itemID);
+
+            if (itemID == "") {
+                std::cout << "Item ID cannot be empty." << std::endl;
+                continue;
+            }
+
+            if (inventory.searchItembyID(itemID, item)) {
+                std::cout << "\n=== Item Found ===" << std::endl;
+                printItem(item);
+            } else {
+                std::cout << "Item not found for ID: " << itemID << std::endl;
+            }
+        } else if (choice == 3) {
+            std::string itemName;
+
+            std::cout << "Enter Item Name: ";
+            std::getline(std::cin, itemName);
+
+            if (itemName == "") {
+                std::cout << "Item name cannot be empty." << std::endl;
+                continue;
+            }
+
+            inventory.searchItembyName(itemName);
+        } else if (choice == 4) {
+            Item item;
+            Item existingItem;
+
+            std::cout << "Enter Item ID: ";
+            std::getline(std::cin, item.itemID);
+            if (item.itemID == "") {
+                std::cout << "Item ID cannot be empty." << std::endl;
+                continue;
+            }
+            if (inventory.searchItembyID(item.itemID, existingItem)) {
+                std::cout << "Insert failed. Duplicate Item ID already exists: "
+                          << item.itemID << std::endl;
+                continue;
+            }
+
+            std::cout << "Enter Item Name: ";
+            std::getline(std::cin, item.itemName);
+            if (item.itemName == "") {
+                std::cout << "Item name cannot be empty." << std::endl;
+                continue;
+            }
+
+            std::cout << "Enter Zone: ";
+            std::getline(std::cin, item.location.zone);
+            std::cout << "Enter Aisle: ";
+            std::getline(std::cin, item.location.aisle);
+            std::cout << "Enter Shelf: ";
+            std::getline(std::cin, item.location.shelf);
+            std::cout << "Enter Stock Quantity: ";
+            if (!(std::cin >> item.stockQuantity)) {
+                std::cout << "Invalid stock quantity. Please enter a number." << std::endl;
+                clearInputBuffer();
+                continue;
+            }
+            clearInputBuffer();
+            if (item.stockQuantity < 0) {
+                std::cout << "Stock quantity cannot be negative." << std::endl;
+                continue;
+            }
+
+            inventory.insertItem(item);
+            std::cout << "Item inserted successfully." << std::endl;
+            std::cout << "Total Inventory Count: "
+                      << inventory.getTotalItems() << std::endl;
+        } else if (choice == 5) {
+            std::string itemID;
+            int newQuantity;
+
+            std::cout << "Enter Item ID: ";
+            std::getline(std::cin, itemID);
+            if (itemID == "") {
+                std::cout << "Item ID cannot be empty." << std::endl;
+                continue;
+            }
+
+            std::cout << "Enter New Stock Quantity: ";
+            if (!(std::cin >> newQuantity)) {
+                std::cout << "Invalid stock quantity. Please enter a number." << std::endl;
+                clearInputBuffer();
+                continue;
+            }
+            clearInputBuffer();
+            if (newQuantity < 0) {
+                std::cout << "Stock quantity cannot be negative." << std::endl;
+                continue;
+            }
+
+            if (inventory.updateStock(itemID, newQuantity)) {
+                std::cout << "Stock updated successfully." << std::endl;
+            } else {
+                std::cout << "Item not found for ID: " << itemID << std::endl;
+            }
+        } else if (choice == 6) {
+            std::string itemID;
+            Item item;
+
+            std::cout << "Enter Item ID: ";
+            std::getline(std::cin, itemID);
+            if (itemID == "") {
+                std::cout << "Item ID cannot be empty." << std::endl;
+                continue;
+            }
+
+            if (inventory.searchItembyID(itemID, item)) {
+                inventory.deleteItem(itemID);
+                std::cout << "Total Inventory Count: "
+                          << inventory.getTotalItems() << std::endl;
+            } else {
+                std::cout << "Delete failed. Item not found: "
+                          << itemID << std::endl;
+            }
+        } else if (choice == 7) {
+            int threshold;
+
+            std::cout << "Enter Low Stock Threshold: ";
+            if (!(std::cin >> threshold)) {
+                std::cout << "Invalid threshold. Please enter a number." << std::endl;
+                clearInputBuffer();
+                continue;
+            }
+            clearInputBuffer();
+            if (threshold < 0) {
+                std::cout << "Threshold cannot be negative." << std::endl;
+                continue;
+            }
+
+            inventory.displayLowStockItems(threshold);
+        } else if (choice == 8) {
+            std::cout << "Returning to main menu." << std::endl;
+        } else {
+            std::cout << "Invalid choice." << std::endl;
+        }
     }
 }
 
@@ -289,7 +484,7 @@ static void printMenu() {
               << " 2. Display Pending Orders\n"
               << " 3. Process Next Order (Guided Workflow using 5 modules)\n"
               << " 4. Display Robot Status\n"
-              << " 5. Display Item List\n"
+              << " 5. Item Search and Management\n"
               << " 6. Display Warehouse Layout\n"
               << " 7. Display Active Orders\n"
               << " 8. Display Completed Orders\n"
@@ -313,6 +508,7 @@ int main() {
     // Load hardcoded sample data
     std::cout << "=== Warehouse Robot Navigation System ===\n" << std::endl;
     initializeSampleOrders(orderQueue);
+    loadSampleItems();
     // Members 2/4/5: load your sample robots/items/layout here.
 
     // Main menu loop 
@@ -327,7 +523,7 @@ int main() {
             case  2: orderQueue.displayPendingOrders();          break;
             case  3: menuGuidedWorkflow(orderQueue);             break;
             case  4: robot_stub::displayRobotStatus();           break;   // Member 2
-            case  5: item_stub::displayItems();                  break;   // Member 4
+            case  5: menuItemManagement();                       break;   // Member 4
             case  6: warehouse_stub::displayWarehouseLayout();   break;   // Member 5
             case  7: orderQueue.displayActiveOrders();           break;
             case  8: orderQueue.displayCompletedOrders();        break;
