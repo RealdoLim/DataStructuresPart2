@@ -15,7 +15,8 @@
 
 #include "shared_types.hpp"
 #include "system_config.hpp"
-#include "order_queue.hpp"      
+#include "order_queue.hpp"
+#include "robot_circular_queue.hpp" 
 #include "item_bst.hpp"
 #include "warehouse_tree.hpp"
 
@@ -36,43 +37,6 @@ static void clearInputBuffer() {
 static void pressEnterToContinue() {
     cout << "Press Enter to continue...";
     cin.get();
-}
-
-
-// =====================================================================
-// STUB - MEMBER 2 - ROBOT ASSIGNMENT MODULE
-// Replace these stub functions with calls to your RobotCircularQueue.
-// =====================================================================
-namespace robot_stub {
-    // Rotates between R1 and R2 to mimic the circular queue idea.
-    // R3 is "Maintenance" so we skip it - exactly what the real
-    // circular queue will do.
-    static int rotationPointer = 1;     // 1 or 2
-
-    int assignRobot(int orderID) {
-        int assigned = rotationPointer;
-        rotationPointer = (rotationPointer == 1) ? 2 : 1;     // toggle
-        cout << "[Robot Assignment - STUB] Robot R" << assigned
-             << " assigned to Order " << orderID << "." << endl;
-        return assigned;
-    }
-
-    void setRobotAvailable(int robotID) {
-        cout << "[Robot Assignment - STUB] Robot R" << robotID
-             << " set back to Available." << endl;
-    }
-
-    void displayRobotStatus() {
-        cout << "\n=== Robot Status (STUB - Member 2) ===" << endl;
-        cout << "R1  Available" << endl;
-        cout << "R2  Available" << endl;
-        cout << "R3  Maintenance" << endl;
-    }
-
-    void displayAssignmentHistory() {
-        cout << "\n=== Assignment History (STUB - Member 2) ===" << endl;
-        cout << "(Member 2 will print the real history here.)" << endl;
-    }
 }
 
 // MEMBER 4 - ITEM SEARCH AND MANAGEMENT MODULE
@@ -391,7 +355,44 @@ namespace nav_stub {
     }
 }
 
+//==================================
+// Robot Assignment Module
+//==================================
+
+// Loads 3 sample robots for demo
+void initializeRobots(RobotCircularQueue& robotQueue)
+{
+    int totalRobots = 30;
+
+    for (int i = 1; i <= totalRobots; i++)
+    {
+        Robot robot;
+
+        robot.robotID = i;
+        robot.robotName = "R" + std::to_string(i);
+
+        // Maintenance robots
+        if (i == 5)
+        {
+            robot.status = "Maintenance";
+        }
+        else
+        {
+            robot.status = "Available";
+        }
+
+        robot.currentOrderID = -1;
+        robot.taskCount = 0;
+
+        robotQueue.addRobot(robot);
+    }
+
+    std::cout << "[Init] Loaded 11 sample robots." << std::endl;
+}
+
+//==================================
 // Order Management Module
+//==================================
 
 // Loads 3 sample orders for demo
 static void initializeSampleOrders(OrderQueue& orderQueue) {
@@ -445,8 +446,8 @@ static void menuAddNewOrder(OrderQueue& orderQueue) {
 }
 
 // Menu option 3 - the guided workflow(combination of 5 modules)
-static void menuGuidedWorkflow(OrderQueue& orderQueue) {
-    cout << "\n========== GUIDED ORDER WORKFLOW ==========\n" << endl;
+static void menuGuidedWorkflow(OrderQueue& orderQueue, RobotCircularQueue& robotQueue) {
+    std::cout << "\n========== GUIDED ORDER WORKFLOW ==========\n" << std::endl;
 
     // Step 1: dequeue from Order Management
     cout << "Step 1: Dequeue next order from Order Management." << endl;
@@ -457,8 +458,8 @@ static void menuGuidedWorkflow(OrderQueue& orderQueue) {
     pressEnterToContinue();
 
     // ---- Step 2: Robot Assignment (STUB - Member 2) ----
-    cout << "\nStep 2: Assign a robot using Robot Assignment." << endl;
-    int robotID = robot_stub::assignRobot(order.orderID);
+    std::cout << "\nStep 2: Assign a robot using Robot Assignment." << std::endl;
+    int robotID = robotQueue.assignRobot(order.orderID);
     if (robotID == -1) {
         cout << "No available robot. Order returns to pending."
              << endl;
@@ -509,8 +510,8 @@ static void menuGuidedWorkflow(OrderQueue& orderQueue) {
     pressEnterToContinue();
 
     // Step 10: free the robot (STUB - Member 2)
-    cout << "\nStep 10: Mark robot as Available again." << endl;
-    robot_stub::setRobotAvailable(robotID);
+    std::cout << "\nStep 10: Mark robot as Available again." << std::endl;
+    robotQueue.setRobotAvailable(robotID);
 
     cout << "\n========== WORKFLOW COMPLETE ==========\n" << endl;
 }
@@ -543,17 +544,19 @@ static void printMenu() {
 
 int main() {
     // ----- Create each module's object here -----
-    OrderQueue orderQueue;       // order management module
+    OrderQueue orderQueue;              // order management module
+    RobotCircularQueue robotQueue;    // robot assignment module
     WarehouseTree warehouse;      // warehouse layout and navigation module
 
     // Members 2-5: instantiate your objects here when ready, e.g.
-    // RobotCircularQueue robotQueue;
     // ItemBST            itemTree;
     // (PathStack lives inside the navigation workflow, not here.)
 
     // Load hardcoded sample data
     cout << "=== Warehouse Robot Navigation System ===\n" << endl;
     initializeSampleOrders(orderQueue);
+    // Members 2/4/5: load your sample robots/items/layout here.
+    initializeRobots(robotQueue);
     loadSampleItems();
     initializeSampleWarehouse(warehouse);
     warehouse_stub::connectWarehouseTree(warehouse);
@@ -569,13 +572,13 @@ int main() {
         switch (choice) {
             case  1: menuAddNewOrder(orderQueue);                break;
             case  2: orderQueue.displayPendingOrders();          break;
-            case  3: menuGuidedWorkflow(orderQueue);             break;
-            case  4: robot_stub::displayRobotStatus();           break;   // Member 2
+            case  3: menuGuidedWorkflow(orderQueue, robotQueue);             break;
+            case  4: robotQueue.displayRobotStatus();           break;   // Member 2
             case  5: menuItemManagement();                       break;   // Member 4
             case  6: warehouse_stub::displayWarehouseLayout();   break;   // Member 5
             case  7: orderQueue.displayActiveOrders();           break;
             case  8: orderQueue.displayCompletedOrders();        break;
-            case  9: robot_stub::displayAssignmentHistory();     break;   // Member 2
+            case  9: robotQueue.displayAssignmentHistory();     break;   // Member 2
             case 10: nav_stub::displayNavigationLog();           break;   // Member 3
             case 11: menuCancelOrder(orderQueue);                break;
             case  0: cout << "Exiting." << endl;                 break;
