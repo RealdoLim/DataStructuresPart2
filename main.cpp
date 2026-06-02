@@ -95,11 +95,6 @@ namespace item_stub {
                       << itemID << "." << std::endl;
             return false;
         }
-
-        std::cout << "[Item Search] Found " << outItem.itemName
-                  << " at " << outItem.location.zone << ", "
-                  << outItem.location.aisle << ", "
-                  << outItem.location.shelf << "." << std::endl;
         return true;
     }
 
@@ -131,9 +126,9 @@ static void printItem(const Item& item) {
     std::cout << "Item Name      : " << item.itemName << std::endl;
     std::cout << "Stock Quantity : " << item.stockQuantity << std::endl;
     std::cout << "Location       : "
-              << item.location.zone << ", "
-              << item.location.aisle << ", "
-              << item.location.shelf << std::endl;
+              << "Zone: " << item.location.zone << ", "
+              << "Aisle: " << item.location.aisle << ", "
+              << "Shelf: " << item.location.shelf << std::endl;
     std::cout << "------------------------------------------------------------" << std::endl;
 }
 
