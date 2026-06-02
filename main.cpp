@@ -16,12 +16,12 @@
 #include "shared_types.hpp"
 #include "system_config.hpp"
 #include "order_queue.hpp"      
+#include "warehouse_tree.hpp"
 
 // Members 2-5: add your includes here when ready.
 // #include "robot_circular_queue.hpp"   // Member 2
 // #include "path_stack.hpp"             // Member 3
 // #include "item_bst.hpp"               // Member 4
-// #include "warehouse_tree.hpp"         // Member 5
 
 // Small input helper used by every interactive menu option.
 static void clearInputBuffer() {
@@ -114,29 +114,63 @@ namespace item_stub {
     }
 }
 
-// STUB - MEMBER 5 - WAREHOUSE LAYOUT AND NAVIGATION MODULE
-// Replace with calls to your WarehouseTree.
+// MEMBER 5 - WAREHOUSE LAYOUT AND NAVIGATION MODULE
+// Connected to the real WarehouseTree module.
 namespace warehouse_stub {
-    // For the stub we just print a fake textual route.
-    // The real module will return a linked list of RouteStep objects.
+    static WarehouseTree* warehouseTree = nullptr;
+
+    void connectWarehouseTree(WarehouseTree& tree) {
+        warehouseTree = &tree;
+    }
+
+    std::string resolveShelfId(const Location& loc) {
+        if (loc.zone == "Zone A" && loc.aisle == "Aisle 1" && loc.shelf == "Shelf 2") {
+            return "SHELF_A1_02";
+        }
+        if (loc.zone == "Zone A" && loc.aisle == "Aisle 1" && loc.shelf == "Shelf 1") {
+            return "SHELF_A1_01";
+        }
+        if (loc.zone == "Zone A" && loc.aisle == "Aisle 2" && loc.shelf == "Shelf 1") {
+            return "SHELF_A2_01";
+        }
+        if (loc.zone == "Zone B" && loc.aisle == "Aisle 1" && loc.shelf == "Shelf 1") {
+            return "SHELF_B1_01";
+        }
+        return "";
+    }
+
     void generateAndDisplayRoute(const Location& loc) {
-        std::cout << "[Warehouse Layout - STUB] Route generated:" << std::endl;
-        std::cout << "   Packing Station -> " << loc.zone
-                  << " -> " << loc.aisle << " -> " << loc.shelf << std::endl;
+        if (warehouseTree == nullptr) {
+            std::cout << "[Warehouse Layout] Tree is not connected." << std::endl;
+            return;
+        }
+
+        std::string shelfId = resolveShelfId(loc);
+        if (shelfId == "") {
+            std::cout << "[Warehouse Layout] No shelf ID matches "
+                      << loc.zone << ", " << loc.aisle << ", " << loc.shelf
+                      << "." << std::endl;
+            return;
+        }
+
+        warehouseTree->displayPathFromEntrance(shelfId);
     }
 
     void displayWarehouseLayout() {
-        std::cout << "\n=== Warehouse Layout (STUB - Member 5) ===" << std::endl;
-        std::cout << "Warehouse"            << std::endl;
-        std::cout << "  Zone A"             << std::endl;
-        std::cout << "    Aisle 1"          << std::endl;
-        std::cout << "      Shelf 2 (I001)" << std::endl;
-        std::cout << "  Zone B"             << std::endl;
-        std::cout << "    Aisle 2"          << std::endl;
-        std::cout << "      Shelf 1 (I002)" << std::endl;
-        std::cout << "  Zone C"             << std::endl;
-        std::cout << "    Aisle 1"          << std::endl;
-        std::cout << "      Shelf 3 (I003)" << std::endl;
+        if (warehouseTree == nullptr) {
+            std::cout << "[Warehouse Layout] Tree is not connected." << std::endl;
+            return;
+        }
+
+        warehouseTree->displayLayout();
+        std::cout << "\nSearch Result:" << std::endl;
+        if (warehouseTree->locationExists("SHELF_A1_02")) {
+            std::cout << "SHELF_A1_02 found." << std::endl;
+        }
+
+        warehouseTree->displayTraversal();
+        warehouseTree->displayPathFromEntrance("SHELF_A1_02");
+        warehouseTree->displayPathFromEntrance("SHELF_UNKNOWN");
     }
 }
 
@@ -176,6 +210,21 @@ static void initializeSampleOrders(OrderQueue& orderQueue) {
     orderQueue.addOrder(o2);
     orderQueue.addOrder(o3);
     std::cout << "[Init] Loaded 3 sample orders.\n" << std::endl;
+}
+
+// Loads the sample hierarchy required for Member 5's live demo.
+static void initializeSampleWarehouse(WarehouseTree& warehouse) {
+    warehouse.addLocation("ENTRANCE", "ZONE_A", "Zone A", "Zone");
+    warehouse.addLocation("ENTRANCE", "ZONE_B", "Zone B", "Zone");
+
+    warehouse.addLocation("ZONE_A", "AISLE_A1", "Aisle A1", "Aisle");
+    warehouse.addLocation("ZONE_A", "AISLE_A2", "Aisle A2", "Aisle");
+    warehouse.addLocation("ZONE_B", "AISLE_B1", "Aisle B1", "Aisle");
+
+    warehouse.addLocation("AISLE_A1", "SHELF_A1_01", "Shelf A1-01", "Shelf");
+    warehouse.addLocation("AISLE_A1", "SHELF_A1_02", "Shelf A1-02", "Shelf");
+    warehouse.addLocation("AISLE_A2", "SHELF_A2_01", "Shelf A2-01", "Shelf");
+    warehouse.addLocation("AISLE_B1", "SHELF_B1_01", "Shelf B1-01", "Shelf");
 }
 
 // Menu option 1 - interactive manual add.
@@ -303,17 +352,19 @@ static void printMenu() {
 int main() {
     // ----- Create each module's object here -----
     OrderQueue orderQueue;       // order management module
+    WarehouseTree warehouse;      // warehouse layout and navigation module
 
     // Members 2-5: instantiate your objects here when ready, e.g.
     // RobotCircularQueue robotQueue;
     // ItemBST            itemTree;
-    // WarehouseTree      warehouse;
     // (PathStack lives inside the navigation workflow, not here.)
 
     // Load hardcoded sample data
     std::cout << "=== Warehouse Robot Navigation System ===\n" << std::endl;
     initializeSampleOrders(orderQueue);
-    // Members 2/4/5: load your sample robots/items/layout here.
+    initializeSampleWarehouse(warehouse);
+    warehouse_stub::connectWarehouseTree(warehouse);
+    // Members 2/4: load your sample robots/items here.
 
     // Main menu loop 
     int choice = -1;
