@@ -3,6 +3,8 @@
 
 #include <string>
 
+using namespace std;
+
 // MODULE 5 - WAREHOUSE LAYOUT AND NAVIGATION
 //
 // The warehouse is naturally hierarchical:
@@ -11,9 +13,9 @@
 // to rebuild a robot route from any shelf back to the entrance.
 
 struct WarehouseNode {
-    std::string locationId;
-    std::string locationName;
-    std::string locationType;
+    string locationId;
+    string locationName;
+    string locationType;
 
     WarehouseNode* parent;
     WarehouseNode* firstChild;
@@ -24,12 +26,12 @@ class WarehouseTree {
 private:
     WarehouseNode* root;
 
-    WarehouseNode* createNode(const std::string& locationId,
-                              const std::string& locationName,
-                              const std::string& locationType,
+    WarehouseNode* createNode(const string& locationId,
+                              const string& locationName,
+                              const string& locationType,
                               WarehouseNode* parent);
     WarehouseNode* searchRecursive(WarehouseNode* current,
-                                   const std::string& locationId);
+                                   const string& locationId);
     void displayRecursive(WarehouseNode* current, int level);
     void traversalRecursive(WarehouseNode* current);
     void destroyRecursive(WarehouseNode* current);
@@ -38,16 +40,16 @@ public:
     WarehouseTree();
     ~WarehouseTree();
 
-    void addLocation(const std::string& parentId,
-                     const std::string& locationId,
-                     const std::string& locationName,
-                     const std::string& locationType);
-    WarehouseNode* searchLocation(const std::string& locationId);
-    bool locationExists(const std::string& locationId);
+    void addLocation(const string& parentId,
+                     const string& locationId,
+                     const string& locationName,
+                     const string& locationType);
+    WarehouseNode* searchLocation(const string& locationId);
+    bool locationExists(const string& locationId);
     void displayLayout();
     void displayTraversal();
-    void displayPathFromEntrance(const std::string& destinationId);
-    int calculateDistanceFromEntrance(const std::string& destinationId);
+    void displayPathFromEntrance(const string& destinationId);
+    int calculateDistanceFromEntrance(const string& destinationId);
 };
 
 #endif

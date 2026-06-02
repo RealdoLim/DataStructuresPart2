@@ -2,6 +2,8 @@
 
 #include <iostream>
 
+using namespace std;
+
 const int MAX_WAREHOUSE_PATH_DEPTH = 50;
 
 WarehouseTree::WarehouseTree() {
@@ -13,9 +15,9 @@ WarehouseTree::~WarehouseTree() {
     root = nullptr;
 }
 
-WarehouseNode* WarehouseTree::createNode(const std::string& locationId,
-                                         const std::string& locationName,
-                                         const std::string& locationType,
+WarehouseNode* WarehouseTree::createNode(const string& locationId,
+                                         const string& locationName,
+                                         const string& locationType,
                                          WarehouseNode* parent) {
     WarehouseNode* node = new WarehouseNode;
     node->locationId = locationId;
@@ -38,7 +40,7 @@ void WarehouseTree::destroyRecursive(WarehouseNode* current) {
 }
 
 WarehouseNode* WarehouseTree::searchRecursive(WarehouseNode* current,
-                                              const std::string& locationId) {
+                                              const string& locationId) {
     if (current == nullptr) {
         return nullptr;
     }
@@ -61,11 +63,11 @@ void WarehouseTree::displayRecursive(WarehouseNode* current, int level) {
     }
 
     for (int i = 0; i < level; i++) {
-        std::cout << "  ";
+        cout << "  ";
     }
 
-    std::cout << current->locationId << " - " << current->locationName
-              << " (" << current->locationType << ")" << std::endl;
+    cout << current->locationId << " - " << current->locationName
+         << " (" << current->locationType << ")" << endl;
 
     displayRecursive(current->firstChild, level + 1);
     displayRecursive(current->nextSibling, level);
@@ -76,28 +78,28 @@ void WarehouseTree::traversalRecursive(WarehouseNode* current) {
         return;
     }
 
-    std::cout << current->locationId << " [" << current->locationType << "]"
-              << std::endl;
+    cout << current->locationId << " [" << current->locationType << "]"
+         << endl;
 
     traversalRecursive(current->firstChild);
     traversalRecursive(current->nextSibling);
 }
 
-void WarehouseTree::addLocation(const std::string& parentId,
-                                const std::string& locationId,
-                                const std::string& locationName,
-                                const std::string& locationType) {
+void WarehouseTree::addLocation(const string& parentId,
+                                const string& locationId,
+                                const string& locationName,
+                                const string& locationType) {
     if (locationExists(locationId)) {
-        std::cout << "[Warehouse Layout] Location " << locationId
-                  << " already exists. Duplicate not added." << std::endl;
+        cout << "[Warehouse Layout] Location " << locationId
+             << " already exists. Duplicate not added." << endl;
         return;
     }
 
     WarehouseNode* parent = searchLocation(parentId);
     if (parent == nullptr) {
-        std::cout << "[Warehouse Layout] Parent location " << parentId
-                  << " was not found. Cannot add " << locationId << "."
-                  << std::endl;
+        cout << "[Warehouse Layout] Parent location " << parentId
+             << " was not found. Cannot add " << locationId << "."
+             << endl;
         return;
     }
 
@@ -115,29 +117,29 @@ void WarehouseTree::addLocation(const std::string& parentId,
     sibling->nextSibling = newNode;
 }
 
-WarehouseNode* WarehouseTree::searchLocation(const std::string& locationId) {
+WarehouseNode* WarehouseTree::searchLocation(const string& locationId) {
     return searchRecursive(root, locationId);
 }
 
-bool WarehouseTree::locationExists(const std::string& locationId) {
+bool WarehouseTree::locationExists(const string& locationId) {
     return searchLocation(locationId) != nullptr;
 }
 
 void WarehouseTree::displayLayout() {
-    std::cout << "\n=== Warehouse Layout ===" << std::endl;
+    cout << "\n=== Warehouse Layout ===" << endl;
     displayRecursive(root, 0);
 }
 
 void WarehouseTree::displayTraversal() {
-    std::cout << "\n=== Warehouse Traversal (Pre-order) ===" << std::endl;
+    cout << "\n=== Warehouse Traversal (Pre-order) ===" << endl;
     traversalRecursive(root);
 }
 
-void WarehouseTree::displayPathFromEntrance(const std::string& destinationId) {
+void WarehouseTree::displayPathFromEntrance(const string& destinationId) {
     WarehouseNode* destination = searchLocation(destinationId);
     if (destination == nullptr) {
-        std::cout << "[Warehouse Layout] Route cannot be generated. Location "
-                  << destinationId << " does not exist." << std::endl;
+        cout << "[Warehouse Layout] Route cannot be generated. Location "
+             << destinationId << " does not exist." << endl;
         return;
     }
 
@@ -154,24 +156,24 @@ void WarehouseTree::displayPathFromEntrance(const std::string& destinationId) {
     }
 
     if (current != nullptr) {
-        std::cout << "[Warehouse Layout] Path is deeper than the supported "
-                  << MAX_WAREHOUSE_PATH_DEPTH << " locations." << std::endl;
+        cout << "[Warehouse Layout] Path is deeper than the supported "
+             << MAX_WAREHOUSE_PATH_DEPTH << " locations." << endl;
         return;
     }
 
-    std::cout << "\n=== Path Generated for Robot Navigation ===" << std::endl;
+    cout << "\n=== Path Generated for Robot Navigation ===" << endl;
     for (int i = count - 1; i >= 0; i--) {
-        std::cout << path[i]->locationId;
+        cout << path[i]->locationId;
         if (i > 0) {
-            std::cout << " -> ";
+            cout << " -> ";
         }
     }
-    std::cout << std::endl;
-    std::cout << "Distance from ENTRANCE: " << (count - 1)
-              << " step(s)" << std::endl;
+    cout << endl;
+    cout << "Distance from ENTRANCE: " << (count - 1)
+         << " step(s)" << endl;
 }
 
-int WarehouseTree::calculateDistanceFromEntrance(const std::string& destinationId) {
+int WarehouseTree::calculateDistanceFromEntrance(const string& destinationId) {
     WarehouseNode* destination = searchLocation(destinationId);
     if (destination == nullptr) {
         return -1;

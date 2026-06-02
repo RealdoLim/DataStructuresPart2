@@ -18,6 +18,8 @@
 #include "order_queue.hpp"      
 #include "warehouse_tree.hpp"
 
+using namespace std;
+
 // Members 2-5: add your includes here when ready.
 // #include "robot_circular_queue.hpp"   // Member 2
 // #include "path_stack.hpp"             // Member 3
@@ -25,15 +27,15 @@
 
 // Small input helper used by every interactive menu option.
 static void clearInputBuffer() {
-    std::cin.clear();
-    std::cin.ignore(std::numeric_limits<std::streamsize>::max(), '\n');
+    cin.clear();
+    cin.ignore(numeric_limits<streamsize>::max(), '\n');
 }
 
 // Wait for the user to press Enter. Used by the guided workflow so
 // the lecturer can see each step clearly during the live demo.
 static void pressEnterToContinue() {
-    std::cout << "Press Enter to continue...";
-    std::cin.get();
+    cout << "Press Enter to continue...";
+    cin.get();
 }
 
 
@@ -50,26 +52,26 @@ namespace robot_stub {
     int assignRobot(int orderID) {
         int assigned = rotationPointer;
         rotationPointer = (rotationPointer == 1) ? 2 : 1;     // toggle
-        std::cout << "[Robot Assignment - STUB] Robot R" << assigned
-                  << " assigned to Order " << orderID << "." << std::endl;
+        cout << "[Robot Assignment - STUB] Robot R" << assigned
+             << " assigned to Order " << orderID << "." << endl;
         return assigned;
     }
 
     void setRobotAvailable(int robotID) {
-        std::cout << "[Robot Assignment - STUB] Robot R" << robotID
-                  << " set back to Available." << std::endl;
+        cout << "[Robot Assignment - STUB] Robot R" << robotID
+             << " set back to Available." << endl;
     }
 
     void displayRobotStatus() {
-        std::cout << "\n=== Robot Status (STUB - Member 2) ===" << std::endl;
-        std::cout << "R1  Available" << std::endl;
-        std::cout << "R2  Available" << std::endl;
-        std::cout << "R3  Maintenance" << std::endl;
+        cout << "\n=== Robot Status (STUB - Member 2) ===" << endl;
+        cout << "R1  Available" << endl;
+        cout << "R2  Available" << endl;
+        cout << "R3  Maintenance" << endl;
     }
 
     void displayAssignmentHistory() {
-        std::cout << "\n=== Assignment History (STUB - Member 2) ===" << std::endl;
-        std::cout << "(Member 2 will print the real history here.)" << std::endl;
+        cout << "\n=== Assignment History (STUB - Member 2) ===" << endl;
+        cout << "(Member 2 will print the real history here.)" << endl;
     }
 }
 
@@ -78,7 +80,7 @@ namespace robot_stub {
 namespace item_stub {
     // Three hardcoded items matching the demo scenario (plan §10).
     // Returns true if found and fills outItem; false otherwise.
-    bool searchItemByID(const std::string& itemID, int requestedQty, Item& outItem) {
+    bool searchItemByID(const string& itemID, int requestedQty, Item& outItem) {
         if (itemID == "I001") {
             outItem = {"I001", "Laptop Charger", {"Zone A", "Aisle 1", "Shelf 2"}, 10};
         } else if (itemID == "I002") {
@@ -86,31 +88,31 @@ namespace item_stub {
         } else if (itemID == "I003") {
             outItem = {"I003", "Keyboard",       {"Zone C", "Aisle 1", "Shelf 3"}, 8};
         } else {
-            std::cout << "[Item Search - STUB] Item not found." << std::endl;
+            cout << "[Item Search - STUB] Item not found." << endl;
             return false;
         }
         if (requestedQty > outItem.stockQuantity) {
-            std::cout << "[Item Search - STUB] Insufficient stock for "
-                      << itemID << "." << std::endl;
+            cout << "[Item Search - STUB] Insufficient stock for "
+                 << itemID << "." << endl;
             return false;
         }
-        std::cout << "[Item Search - STUB] Found " << outItem.itemName
-                  << " at " << outItem.location.zone << ", "
-                  << outItem.location.aisle << ", "
-                  << outItem.location.shelf << "." << std::endl;
+        cout << "[Item Search - STUB] Found " << outItem.itemName
+             << " at " << outItem.location.zone << ", "
+             << outItem.location.aisle << ", "
+             << outItem.location.shelf << "." << endl;
         return true;
     }
 
-    void reduceStock(const std::string& itemID, int quantity) {
-        std::cout << "[Item Search - STUB] Stock of " << itemID
-                  << " reduced by " << quantity << "." << std::endl;
+    void reduceStock(const string& itemID, int quantity) {
+        cout << "[Item Search - STUB] Stock of " << itemID
+             << " reduced by " << quantity << "." << endl;
     }
 
     void displayItems() {
-        std::cout << "\n=== Item List (STUB - Member 4) ===" << std::endl;
-        std::cout << "I001  Laptop Charger   Zone A, Aisle 1, Shelf 2   Stock: 10" << std::endl;
-        std::cout << "I002  Wireless Mouse   Zone B, Aisle 2, Shelf 1   Stock: 5"  << std::endl;
-        std::cout << "I003  Keyboard         Zone C, Aisle 1, Shelf 3   Stock: 8"  << std::endl;
+        cout << "\n=== Item List (STUB - Member 4) ===" << endl;
+        cout << "I001  Laptop Charger   Zone A, Aisle 1, Shelf 2   Stock: 10" << endl;
+        cout << "I002  Wireless Mouse   Zone B, Aisle 2, Shelf 1   Stock: 5"  << endl;
+        cout << "I003  Keyboard         Zone C, Aisle 1, Shelf 3   Stock: 8"  << endl;
     }
 }
 
@@ -123,7 +125,7 @@ namespace warehouse_stub {
         warehouseTree = &tree;
     }
 
-    std::string resolveShelfId(const Location& loc) {
+    string resolveShelfId(const Location& loc) {
         if (loc.zone == "Zone A" && loc.aisle == "Aisle 1" && loc.shelf == "Shelf 2") {
             return "SHELF_A1_02";
         }
@@ -141,15 +143,15 @@ namespace warehouse_stub {
 
     void generateAndDisplayRoute(const Location& loc) {
         if (warehouseTree == nullptr) {
-            std::cout << "[Warehouse Layout] Tree is not connected." << std::endl;
+            cout << "[Warehouse Layout] Tree is not connected." << endl;
             return;
         }
 
-        std::string shelfId = resolveShelfId(loc);
+        string shelfId = resolveShelfId(loc);
         if (shelfId == "") {
-            std::cout << "[Warehouse Layout] No shelf ID matches "
-                      << loc.zone << ", " << loc.aisle << ", " << loc.shelf
-                      << "." << std::endl;
+            cout << "[Warehouse Layout] No shelf ID matches "
+                 << loc.zone << ", " << loc.aisle << ", " << loc.shelf
+                 << "." << endl;
             return;
         }
 
@@ -158,14 +160,14 @@ namespace warehouse_stub {
 
     void displayWarehouseLayout() {
         if (warehouseTree == nullptr) {
-            std::cout << "[Warehouse Layout] Tree is not connected." << std::endl;
+            cout << "[Warehouse Layout] Tree is not connected." << endl;
             return;
         }
 
         warehouseTree->displayLayout();
-        std::cout << "\nSearch Result:" << std::endl;
+        cout << "\nSearch Result:" << endl;
         if (warehouseTree->locationExists("SHELF_A1_02")) {
-            std::cout << "SHELF_A1_02 found." << std::endl;
+            cout << "SHELF_A1_02 found." << endl;
         }
 
         warehouseTree->displayTraversal();
@@ -179,23 +181,23 @@ namespace warehouse_stub {
 namespace nav_stub {
     // Pretend forward movements (plan §10 demo).
     void moveAlongRoute(int robotID) {
-        std::cout << "[Navigation - STUB] Robot R" << robotID
-                  << " forward path:" << std::endl;
-        std::cout << "   Move Forward -> Turn Left -> Move Forward -> Pick Item"
-                  << std::endl;
+        cout << "[Navigation - STUB] Robot R" << robotID
+             << " forward path:" << endl;
+        cout << "   Move Forward -> Turn Left -> Move Forward -> Pick Item"
+             << endl;
     }
 
     // Pretend reverse using stack LIFO (plan §10).
     void returnToStart(int robotID) {
-        std::cout << "[Navigation - STUB] Robot R" << robotID
-                  << " reverse path:" << std::endl;
-        std::cout << "   Move Backward -> Turn Right -> Move Backward"
-                  << std::endl;
+        cout << "[Navigation - STUB] Robot R" << robotID
+             << " reverse path:" << endl;
+        cout << "   Move Backward -> Turn Right -> Move Backward"
+             << endl;
     }
 
     void displayNavigationLog() {
-        std::cout << "\n=== Navigation Log (STUB - Member 3) ===" << std::endl;
-        std::cout << "(Member 3 will print the real log here.)" << std::endl;
+        cout << "\n=== Navigation Log (STUB - Member 3) ===" << endl;
+        cout << "(Member 3 will print the real log here.)" << endl;
     }
 }
 
@@ -209,7 +211,7 @@ static void initializeSampleOrders(OrderQueue& orderQueue) {
     orderQueue.addOrder(o1);
     orderQueue.addOrder(o2);
     orderQueue.addOrder(o3);
-    std::cout << "[Init] Loaded 3 sample orders.\n" << std::endl;
+    cout << "[Init] Loaded 3 sample orders.\n" << endl;
 }
 
 // Loads the sample hierarchy required for Member 5's live demo.
@@ -230,21 +232,21 @@ static void initializeSampleWarehouse(WarehouseTree& warehouse) {
 // Menu option 1 - interactive manual add.
 static void menuAddNewOrder(OrderQueue& orderQueue) {
     Order o;
-    std::cout << "Enter Order ID (int): ";
-    if (!(std::cin >> o.orderID)) { clearInputBuffer(); return; }
+    cout << "Enter Order ID (int): ";
+    if (!(cin >> o.orderID)) { clearInputBuffer(); return; }
     clearInputBuffer();
 
-    std::cout << "Enter Customer Name: ";
-    std::getline(std::cin, o.customerName);
+    cout << "Enter Customer Name: ";
+    getline(cin, o.customerName);
 
-    std::cout << "Enter Item ID (e.g. I001): ";
-    std::getline(std::cin, o.itemID);
+    cout << "Enter Item ID (e.g. I001): ";
+    getline(cin, o.itemID);
 
-    std::cout << "Enter Item Name: ";
-    std::getline(std::cin, o.itemName);
+    cout << "Enter Item Name: ";
+    getline(cin, o.itemName);
 
-    std::cout << "Enter Quantity: ";
-    if (!(std::cin >> o.quantity)) { clearInputBuffer(); return; }
+    cout << "Enter Quantity: ";
+    if (!(cin >> o.quantity)) { clearInputBuffer(); return; }
     clearInputBuffer();
 
     o.status          = "Pending";
@@ -254,10 +256,10 @@ static void menuAddNewOrder(OrderQueue& orderQueue) {
 
 // Menu option 3 - the guided workflow(combination of 5 modules)
 static void menuGuidedWorkflow(OrderQueue& orderQueue) {
-    std::cout << "\n========== GUIDED ORDER WORKFLOW ==========\n" << std::endl;
+    cout << "\n========== GUIDED ORDER WORKFLOW ==========\n" << endl;
 
     // Step 1: dequeue from Order Management
-    std::cout << "Step 1: Dequeue next order from Order Management." << std::endl;
+    cout << "Step 1: Dequeue next order from Order Management." << endl;
     Order order = orderQueue.processNextOrder();
     if (order.orderID == -1) {
         return;
@@ -265,88 +267,88 @@ static void menuGuidedWorkflow(OrderQueue& orderQueue) {
     pressEnterToContinue();
 
     // ---- Step 2: Robot Assignment (STUB - Member 2) ----
-    std::cout << "\nStep 2: Assign a robot using Robot Assignment." << std::endl;
+    cout << "\nStep 2: Assign a robot using Robot Assignment." << endl;
     int robotID = robot_stub::assignRobot(order.orderID);
     if (robotID == -1) {
-        std::cout << "No available robot. Order returns to pending."
-                  << std::endl;
+        cout << "No available robot. Order returns to pending."
+             << endl;
         orderQueue.addOrder(order);     // put it back at the rear of the queue
         return;
     }
     pressEnterToContinue();
 
     // Step 3: mark Assigned 
-    std::cout << "\nStep 3: Mark order as Assigned in Order Management." << std::endl;
+    cout << "\nStep 3: Mark order as Assigned in Order Management." << endl;
     orderQueue.markOrderAssigned(order, robotID);
     orderQueue.displayActiveOrders();
     pressEnterToContinue();
 
     // Step 4: Item Search (STUB - Member 4)
-    std::cout << "\nStep 4: Search item location using Item Search." << std::endl;
+    cout << "\nStep 4: Search item location using Item Search." << endl;
     Item foundItem;
     bool itemOk = item_stub::searchItemByID(order.itemID, order.quantity, foundItem);
     if (!itemOk) {
-        std::cout << "Item lookup failed - aborting this workflow." << std::endl;
+        cout << "Item lookup failed - aborting this workflow." << endl;
         return;
     }
     pressEnterToContinue();
 
     // Step 5: Warehouse Layout (STUB - Member 5)
-    std::cout << "\nStep 5: Generate route using Warehouse Layout." << std::endl;
+    cout << "\nStep 5: Generate route using Warehouse Layout." << endl;
     warehouse_stub::generateAndDisplayRoute(foundItem.location);
     pressEnterToContinue();
 
     // Step 6: Navigation forward (STUB - Member 3) 
-    std::cout << "\nStep 6: Move robot to item using Navigation Stack." << std::endl;
+    cout << "\nStep 6: Move robot to item using Navigation Stack." << endl;
     nav_stub::moveAlongRoute(robotID);
     pressEnterToContinue();
 
     // Step 7: Navigation reverse (STUB - Member 3)
-    std::cout << "\nStep 7: Return robot using reverse path (stack LIFO)." << std::endl;
+    cout << "\nStep 7: Return robot using reverse path (stack LIFO)." << endl;
     nav_stub::returnToStart(robotID);
     pressEnterToContinue();
 
     // Step 8: mark Completed
-    std::cout << "\nStep 8: Mark order as Completed in Order Management." << std::endl;
+    cout << "\nStep 8: Mark order as Completed in Order Management." << endl;
     orderQueue.markOrderCompleted(order.orderID);
     pressEnterToContinue();
 
     // Step 9: reduce stock (STUB - Member 4) 
-    std::cout << "\nStep 9: Reduce item stock." << std::endl;
+    cout << "\nStep 9: Reduce item stock." << endl;
     item_stub::reduceStock(order.itemID, order.quantity);
     pressEnterToContinue();
 
     // Step 10: free the robot (STUB - Member 2)
-    std::cout << "\nStep 10: Mark robot as Available again." << std::endl;
+    cout << "\nStep 10: Mark robot as Available again." << endl;
     robot_stub::setRobotAvailable(robotID);
 
-    std::cout << "\n========== WORKFLOW COMPLETE ==========\n" << std::endl;
+    cout << "\n========== WORKFLOW COMPLETE ==========\n" << endl;
 }
 
 // Optional - cancel a pending order
 static void menuCancelOrder(OrderQueue& orderQueue) {
     int id;
-    std::cout << "Enter Order ID to cancel: ";
-    if (!(std::cin >> id)) { clearInputBuffer(); return; }
+    cout << "Enter Order ID to cancel: ";
+    if (!(cin >> id)) { clearInputBuffer(); return; }
     clearInputBuffer();
     orderQueue.cancelOrder(id);
 }
 
 static void printMenu() {
-    std::cout << "\n========= MAIN MENU =========\n"
-              << " 1. Add New Order\n"
-              << " 2. Display Pending Orders\n"
-              << " 3. Process Next Order (Guided Workflow using 5 modules)\n"
-              << " 4. Display Robot Status\n"
-              << " 5. Display Item List\n"
-              << " 6. Display Warehouse Layout\n"
-              << " 7. Display Active Orders\n"
-              << " 8. Display Completed Orders\n"
-              << " 9. Display Assignment History\n"
-              << "10. Display Navigation Log\n"
-              << "11. Cancel an Order (optional)\n"
-              << " 0. Exit\n"
-              << "Choice: ";
+    cout << "\n========= MAIN MENU =========\n"
+         << " 1. Add New Order\n"
+         << " 2. Display Pending Orders\n"
+         << " 3. Process Next Order (Guided Workflow using 5 modules)\n"
+         << " 4. Display Robot Status\n"
+         << " 5. Display Item List\n"
+         << " 6. Display Warehouse Layout\n"
+         << " 7. Display Active Orders\n"
+         << " 8. Display Completed Orders\n"
+         << " 9. Display Assignment History\n"
+         << "10. Display Navigation Log\n"
+         << "11. Cancel an Order (optional)\n"
+         << " 0. Exit\n"
+         << "Choice: ";
 }
 
 int main() {
@@ -360,7 +362,7 @@ int main() {
     // (PathStack lives inside the navigation workflow, not here.)
 
     // Load hardcoded sample data
-    std::cout << "=== Warehouse Robot Navigation System ===\n" << std::endl;
+    cout << "=== Warehouse Robot Navigation System ===\n" << endl;
     initializeSampleOrders(orderQueue);
     initializeSampleWarehouse(warehouse);
     warehouse_stub::connectWarehouseTree(warehouse);
@@ -370,7 +372,7 @@ int main() {
     int choice = -1;
     while (choice != 0) {
         printMenu();
-        if (!(std::cin >> choice)) { clearInputBuffer(); continue; }
+        if (!(cin >> choice)) { clearInputBuffer(); continue; }
         clearInputBuffer();
 
         switch (choice) {
@@ -385,8 +387,8 @@ int main() {
             case  9: robot_stub::displayAssignmentHistory();     break;   // Member 2
             case 10: nav_stub::displayNavigationLog();           break;   // Member 3
             case 11: menuCancelOrder(orderQueue);                break;
-            case  0: std::cout << "Exiting." << std::endl;       break;
-            default: std::cout << "Invalid choice." << std::endl;
+            case  0: cout << "Exiting." << endl;                 break;
+            default: cout << "Invalid choice." << endl;
         }
     }
     return 0;
