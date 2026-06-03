@@ -4,7 +4,7 @@
 #include <iomanip>
 
 // order_queue.cpp
-// MODULE 1 - ORDER MANAGEMENT (Member 1)
+// MODULE 1 - ORDER MANAGEMENT (Realdo Aginda Lim TP079467)
 
 // Constructor: every pointer starts at nullptr,
 // every counter starts at 0.

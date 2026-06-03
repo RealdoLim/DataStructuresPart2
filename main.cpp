@@ -1,14 +1,3 @@
-// HOW MEMBERS 2-5 PLUG IN THEIR MODULES:
-//   1. Add  #include "your_module.hpp"  to the includes section.
-//   2. Create your module's object near the top of main(), e.g.
-//        RobotCircularQueue robotQueue;
-//   3. Find your STUB BLOCK below (search for "STUB - MEMBER X")
-//      and replace the body of each stub function with calls
-//      to your module's real functions. Keep the function
-//      signatures unchanged so main() still compiles.
-//   4. Delete the inline sample data inside your stub once
-//      your module loads its own sample data.
-
 #include <iostream>
 #include <string>
 #include <limits>
@@ -21,10 +10,6 @@
 #include "warehouse_tree.hpp"
 
 using namespace std;
-
-// Members 2-5: add your includes here when ready.
-// #include "robot_circular_queue.hpp"   // Member 2
-// #include "path_stack.hpp"             // Member 3
 
 // Small input helper used by every interactive menu option.
 static void clearInputBuffer() {
@@ -391,7 +376,7 @@ void initializeRobots(RobotCircularQueue& robotQueue)
 }
 
 //==================================
-// Order Management Module
+// Order Management Module - TP079467
 //==================================
 
 // Loads 3 sample orders for demo
@@ -449,7 +434,7 @@ static void menuAddNewOrder(OrderQueue& orderQueue) {
 static void menuGuidedWorkflow(OrderQueue& orderQueue, RobotCircularQueue& robotQueue) {
     std::cout << "\n========== GUIDED ORDER WORKFLOW ==========\n" << std::endl;
 
-    // Step 1: dequeue from Order Management
+    // Step 1: dequeue from Order Management (TP079467)
     cout << "Step 1: Dequeue next order from Order Management." << endl;
     Order order = orderQueue.processNextOrder();
     if (order.orderID == -1) {
@@ -457,7 +442,7 @@ static void menuGuidedWorkflow(OrderQueue& orderQueue, RobotCircularQueue& robot
     }
     pressEnterToContinue();
 
-    // ---- Step 2: Robot Assignment (STUB - Member 2) ----
+    // ---- Step 2: Robot Assignment ----
     std::cout << "\nStep 2: Assign a robot using Robot Assignment." << std::endl;
     int robotID = robotQueue.assignRobot(order.orderID);
     if (robotID == -1) {
@@ -474,7 +459,7 @@ static void menuGuidedWorkflow(OrderQueue& orderQueue, RobotCircularQueue& robot
     orderQueue.displayActiveOrders();
     pressEnterToContinue();
 
-    // Step 4: Item Search (STUB - Member 4)
+    // Step 4: Item Search 
     cout << "\nStep 4: Search item location using Item Search." << endl;
     Item foundItem;
     bool itemOk = item_stub::searchItemByID(order.itemID, order.quantity, foundItem);
@@ -484,17 +469,17 @@ static void menuGuidedWorkflow(OrderQueue& orderQueue, RobotCircularQueue& robot
     }
     pressEnterToContinue();
 
-    // Step 5: Warehouse Layout (STUB - Member 5)
+    // Step 5: Warehouse Layout 
     cout << "\nStep 5: Generate route using Warehouse Layout." << endl;
     warehouse_stub::generateAndDisplayRoute(foundItem.location);
     pressEnterToContinue();
 
-    // Step 6: Navigation forward (STUB - Member 3) 
+    // Step 6: Navigation forward 
     cout << "\nStep 6: Move robot to item using Navigation Stack." << endl;
     nav_stub::moveAlongRoute(robotID);
     pressEnterToContinue();
 
-    // Step 7: Navigation reverse (STUB - Member 3)
+    // Step 7: Navigation reverse 
     cout << "\nStep 7: Return robot using reverse path (stack LIFO)." << endl;
     nav_stub::returnToStart(robotID);
     pressEnterToContinue();
@@ -504,12 +489,12 @@ static void menuGuidedWorkflow(OrderQueue& orderQueue, RobotCircularQueue& robot
     orderQueue.markOrderCompleted(order.orderID);
     pressEnterToContinue();
 
-    // Step 9: reduce stock (STUB - Member 4) 
+    // Step 9: reduce stock 
     cout << "\nStep 9: Reduce item stock." << endl;
     item_stub::reduceStock(order.itemID, order.quantity);
     pressEnterToContinue();
 
-    // Step 10: free the robot (STUB - Member 2)
+    // Step 10: free the robot 
     std::cout << "\nStep 10: Mark robot as Available again." << std::endl;
     robotQueue.setRobotAvailable(robotID);
 
@@ -548,19 +533,13 @@ int main() {
     RobotCircularQueue robotQueue;    // robot assignment module
     WarehouseTree warehouse;      // warehouse layout and navigation module
 
-    // Members 2-5: instantiate your objects here when ready, e.g.
-    // ItemBST            itemTree;
-    // (PathStack lives inside the navigation workflow, not here.)
-
     // Load hardcoded sample data
     cout << "=== Warehouse Robot Navigation System ===\n" << endl;
     initializeSampleOrders(orderQueue);
-    // Members 2/4/5: load your sample robots/items/layout here.
     initializeRobots(robotQueue);
     loadSampleItems();
     initializeSampleWarehouse(warehouse);
     warehouse_stub::connectWarehouseTree(warehouse);
-    // Members 2/4: load your sample robots/items here.
 
     // Main menu loop 
     int choice = -1;
@@ -573,13 +552,13 @@ int main() {
             case  1: menuAddNewOrder(orderQueue);                break;
             case  2: orderQueue.displayPendingOrders();          break;
             case  3: menuGuidedWorkflow(orderQueue, robotQueue);             break;
-            case  4: robotQueue.displayRobotStatus();           break;   // Member 2
-            case  5: menuItemManagement();                       break;   // Member 4
-            case  6: warehouse_stub::displayWarehouseLayout();   break;   // Member 5
+            case  4: robotQueue.displayRobotStatus();           break;   
+            case  5: menuItemManagement();                       break;   
+            case  6: warehouse_stub::displayWarehouseLayout();   break;   
             case  7: orderQueue.displayActiveOrders();           break;
             case  8: orderQueue.displayCompletedOrders();        break;
-            case  9: robotQueue.displayAssignmentHistory();     break;   // Member 2
-            case 10: nav_stub::displayNavigationLog();           break;   // Member 3
+            case  9: robotQueue.displayAssignmentHistory();     break;   
+            case 10: nav_stub::displayNavigationLog();           break;   
             case 11: menuCancelOrder(orderQueue);                break;
             case  0: cout << "Exiting." << endl;                 break;
             default: cout << "Invalid choice." << endl;

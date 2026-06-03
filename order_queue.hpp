@@ -4,7 +4,7 @@
 #include "shared_types.hpp"
 
 // order_queue.hpp
-// MODULE 1 - ORDER MANAGEMENT (Member 1)
+// MODULE 1 - ORDER MANAGEMENT (Realdo Aginda Lim TP079467)
 
 // Main data structure: Linked-List-based Queue (pendingOrders).
 // Supporting structures: two singly-linked lists for active and completed orders.
