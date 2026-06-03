@@ -1,3 +1,17 @@
+/* Ryan TP082768
+
+Task completed:
+    Implemented a circular singly linked list to assign tasks to warehouse robots.
+    Implemented round-robin(basically circular) robot assignment for fair task distribution.
+    Implemented robot status management (Available, Busy, Maintenance).
+    Implemented assignment history tracking using a singly linked list.
+    Implemented recursive reverse traversal for displaying recent assignment history.
+    Implemented robot workload tracking through task count monitoring.
+    Implemented paginated robot status display for scalability with large robot fleets.
+    Implemented input validation and error handling for user interactions.
+*/
+
+
 #include "robot_circular_queue.hpp"
 #include <iostream>
 #include <iomanip>
