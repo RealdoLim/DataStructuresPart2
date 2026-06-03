@@ -5,7 +5,19 @@
 
 // order_queue.cpp
 // MODULE 1 - ORDER MANAGEMENT (Realdo Aginda Lim TP079467)
-
+// What I did:
+/*
+- Implemented a queue data structure using a singly linked list to manage orders.
+- Created the OrderNode structure to store order information and link nodes together.
+- Implemented enqueue functionality through addOrder() to add new orders to the pending queue.
+- Implemented dequeue functionality through processNextOrder() to process orders using FIFO (First In First Out).
+- Implemented markOrderAssigned() to move orders from Pending status to Active status.
+- Implemented markOrderCompleted() to move orders from Active status to Completed status.
+- Implemented cancelOrder() to remove pending orders and mark them as Cancelled.
+- Implemented display functions for Pending Orders, Active Orders, and Completed Orders.
+- Implemented input validation for new order creation, including duplicate Order ID checking.
+- Integrated the Order Management module with the main workflow for order processing and robot assignment.
+*/
 // Constructor: every pointer starts at nullptr,
 // every counter starts at 0.
 
@@ -323,4 +335,39 @@ bool OrderQueue::cancelOrder(int orderID) {
     std::cout << "[OrderQueue] Order " << orderID
               << " has been cancelled." << std::endl;
     return true;
+}
+
+bool OrderQueue::orderExists(int orderID) const
+{
+    // Check pending orders
+    OrderNode* curr = pendingFront;
+    while (curr != nullptr)
+    {
+        if (curr->data.orderID == orderID)
+            return true;
+
+        curr = curr->next;
+    }
+
+    // Check active orders
+    curr = activeHead;
+    while (curr != nullptr)
+    {
+        if (curr->data.orderID == orderID)
+            return true;
+
+        curr = curr->next;
+    }
+
+    // Check completed orders
+    curr = completedHead;
+    while (curr != nullptr)
+    {
+        if (curr->data.orderID == orderID)
+            return true;
+
+        curr = curr->next;
+    }
+
+    return false;
 }

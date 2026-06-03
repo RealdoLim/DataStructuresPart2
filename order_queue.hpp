@@ -56,7 +56,8 @@ public:
     void  displayCompletedOrders() const;
 
     // Cancellation 
-    bool  cancelOrder(int orderID);
+    bool cancelOrder(int orderID);
+    bool orderExists(int orderID) const;
 };
 
 #endif

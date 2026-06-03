@@ -408,26 +408,88 @@ static void initializeSampleWarehouse(WarehouseTree& warehouse) {
 // Menu option 1 - interactive manual add.
 static void menuAddNewOrder(OrderQueue& orderQueue) {
     Order o;
-    cout << "Enter Order ID (int): ";
-    if (!(cin >> o.orderID)) { clearInputBuffer(); return; }
+
+    // Order ID
+    while (true)
+{
+    cout << "Enter Order ID (positive integer): ";
+
+    if (!(cin >> o.orderID))
+    {
+        cout << "Invalid input. Please enter a number.\n";
+        clearInputBuffer();
+        continue;
+    }
+
     clearInputBuffer();
 
-    cout << "Enter Customer Name: ";
-    getline(cin, o.customerName);
+    if (o.orderID <= 0)
+    {
+        cout << "Order ID must be greater than 0.\n";
+        continue;
+    }
 
-    cout << "Enter Item ID (e.g. I001): ";
-    getline(cin, o.itemID);
+    if (orderQueue.orderExists(o.orderID))
+    {
+        cout << "Order ID already exists. Please enter a unique Order ID.\n";
+        continue;
+    }
 
-    cout << "Enter Item Name: ";
-    getline(cin, o.itemName);
+    break;
+}
 
-    cout << "Enter Quantity: ";
-    if (!(cin >> o.quantity)) { clearInputBuffer(); return; }
-    clearInputBuffer();
+    // Customer Name
+    while (true) {
+        cout << "Enter Customer Name: ";
+        getline(cin, o.customerName);
 
-    o.status          = "Pending";
+        if (!o.customerName.empty())
+            break;
+
+        cout << "Customer name cannot be empty.\n";
+    }
+
+    // Item ID
+    while (true) {
+        cout << "Enter Item ID (e.g. I001): ";
+        getline(cin, o.itemID);
+
+        if (!o.itemID.empty())
+            break;
+
+        cout << "Item ID cannot be empty.\n";
+    }
+
+    // Item Name
+    while (true) {
+        cout << "Enter Item Name: ";
+        getline(cin, o.itemName);
+
+        if (!o.itemName.empty())
+            break;
+
+        cout << "Item name cannot be empty.\n";
+    }
+
+    // Quantity
+    while (true) {
+        cout << "Enter Quantity: ";
+
+        if (cin >> o.quantity && o.quantity > 0) {
+            clearInputBuffer();
+            break;
+        }
+
+        cout << "Quantity must be a positive integer.\n";
+        clearInputBuffer();
+    }
+
+    o.status = "Pending";
     o.assignedRobotID = -1;
+
     orderQueue.addOrder(o);
+
+    cout << "\nOrder added successfully!\n";
 }
 
 // Menu option 3 - the guided workflow(combination of 5 modules)
