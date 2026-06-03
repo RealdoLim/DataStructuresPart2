@@ -1,3 +1,13 @@
+// Yu Sakuma TP074909
+// What did i do?
+/*
+- Implemented a tree data structure to represent the warehouse layout, where each node represents a location (e.g., entrance, aisle, shelf).
+- Each node contains a unique location ID, name, type, and pointers to its parent, first child, and next sibling.
+- Implemented functions to add locations to the tree, search for locations by ID, check for the existence of a location, display the warehouse layout, and generate a path from the entrance to a specified location.
+- The path generation function uses parent pointers to trace back from the destination node to the entrance, storing the path in a fixed-size array and printing it in reverse order to show the route from the entrance to the destination.
+- Implemented a function to calculate the distance from the entrance to a specified location by counting the number of steps (nodes) in the path from the entrance to the destination.
+*/
+
 #include "warehouse_tree.hpp"
 
 #include <iostream>
@@ -143,8 +153,6 @@ void WarehouseTree::displayPathFromEntrance(const string& destinationId) {
         return;
     }
 
-    // No STL stack/vector is used. Parent pointers are followed upward into a
-    // fixed array, then printed backward to produce Entrance -> ... -> Shelf.
     WarehouseNode* path[MAX_WAREHOUSE_PATH_DEPTH];
     int count = 0;
     WarehouseNode* current = destination;
