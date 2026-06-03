@@ -296,9 +296,14 @@ void RobotCircularQueue::displayRobotStatus() const
             << title
             << endl;
 
-        cout << setw(20)
-            << "Page " << currentPage << "/" << totalPages
-            << " | Total Robots: " << robotCount
+        string pageInfo =
+            "Page " + to_string(currentPage) +
+            "/" + to_string(totalPages) +
+            " | Total Robots: " + to_string(robotCount);
+        int pagePadding = (60 - pageInfo.length()) / 2;
+
+        cout << string(pagePadding, ' ')
+            << pageInfo
             << endl;
 
         cout << string(60, '-') << endl;
