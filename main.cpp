@@ -8,6 +8,7 @@
 #include "robot_circular_queue.hpp" 
 #include "item_bst.hpp"
 #include "warehouse_tree.hpp"
+#include "path_stack.hpp"
 
 using namespace std;
 
@@ -317,26 +318,74 @@ namespace warehouse_stub {
 
 // STUB - MEMBER 3 - ROBOT NAVIGATION AND PATH TRACKING MODULE
 // Replace with calls to your PathStack.
+// MEMBER 3 - ROBOT NAVIGATION AND PATH TRACKING MODULE (REAL INTEGRATION)
 namespace nav_stub {
-    // Pretend forward movements (plan §10 demo).
-    void moveAlongRoute(int robotID) {
-        cout << "[Navigation - STUB] Robot R" << robotID
-             << " forward path:" << endl;
-        cout << "   Move Forward -> Turn Left -> Move Forward -> Pick Item"
-             << endl;
+
+    static PathStack globalLogStack;
+
+    void moveAlongRoute(int robotID, const Order& order) {
+        
+        const int ROUTE_SIZE = 4;
+        RouteStep dummyRoute[ROUTE_SIZE] = {
+            {1, "Move Forward", "Packing Station", "Zone A Aisle 1"},
+            {2, "Turn Right", "Zone A Aisle 1", "Zone A Aisle 1"},
+            {3, "Move Forward", "Zone A Aisle 1", "Zone A Aisle 2"},
+            {4, "Turn Left", "Zone A Aisle 2", "Shelf 2 (Target)"}
+        };
+
+        
+        PathStack currentJourney;
+        
+        
+        currentJourney.moveAlongRoute(robotID, order, dummyRoute, ROUTE_SIZE);
+
+        
+        for(int i = 0; i < ROUTE_SIZE; i++) {
+            globalLogStack.push(dummyRoute[i]);
+        }
     }
 
-    // Pretend reverse using stack LIFO (plan §10).
-    void returnToStart(int robotID) {
-        cout << "[Navigation - STUB] Robot R" << robotID
-             << " reverse path:" << endl;
-        cout << "   Move Backward -> Turn Right -> Move Backward"
-             << endl;
+    void returnToStart(int robotID, int orderID) {
+        
+        PathStack currentJourney;
+        const int ROUTE_SIZE = 4;
+        RouteStep dummyRoute[ROUTE_SIZE] = {
+            {1, "Move Forward", "Packing Station", "Zone A Aisle 1"},
+            {2, "Turn Right", "Zone A Aisle 1", "Zone A Aisle 1"},
+            {3, "Move Forward", "Zone A Aisle 1", "Zone A Aisle 2"},
+            {4, "Turn Left", "Zone A Aisle 2", "Shelf 2 (Target)"}
+        };
+        for(int i = 0; i < ROUTE_SIZE; i++) {
+            currentJourney.push(dummyRoute[i]);
+        }
+
+    
+        currentJourney.returnToStart(robotID, orderID);
     }
 
     void displayNavigationLog() {
-        cout << "\n=== Navigation Log (STUB - Member 3) ===" << endl;
-        cout << "(Member 3 will print the real log here.)" << endl;
+        std::cout << "\n=============================================" << std::endl;
+        std::cout << "=== Navigation Log (Member 3 - PathStack) ===" << std::endl;
+        std::cout << "=============================================" << std::endl;
+        
+        if (globalLogStack.isEmpty()) {
+            std::cout << "No navigation history recorded yet. Please run Option 3 first." << std::endl;
+            return;
+        }
+
+        std::cout << "Showing raw movement history stored in the Global Log Stack (LIFO):" << std::endl;
+        
+        PathStack temp;
+        while(!globalLogStack.isEmpty()) {
+            RouteStep s = globalLogStack.pop();
+            std::cout << " -> Logged Step: [" << s.movement << "] from " << s.fromLocation << " to " << s.toLocation << std::endl;
+            temp.push(s);
+        }
+
+        while(!temp.isEmpty()) {
+            globalLogStack.push(temp.pop());
+        }
+        std::cout << "=============================================" << std::endl;
     }
 }
 
@@ -536,14 +585,14 @@ static void menuGuidedWorkflow(OrderQueue& orderQueue, RobotCircularQueue& robot
     warehouse_stub::generateAndDisplayRoute(foundItem.location);
     pressEnterToContinue();
 
-    // Step 6: Navigation forward 
+    // Step 6: Navigation forward (REAL - Member 3) 
     cout << "\nStep 6: Move robot to item using Navigation Stack." << endl;
-    nav_stub::moveAlongRoute(robotID);
+    nav_stub::moveAlongRoute(robotID, order);
     pressEnterToContinue();
 
-    // Step 7: Navigation reverse 
+    // Step 7: Navigation reverse (REAL - Member 3)
     cout << "\nStep 7: Return robot using reverse path (stack LIFO)." << endl;
-    nav_stub::returnToStart(robotID);
+    nav_stub::returnToStart(robotID, order.orderID);
     pressEnterToContinue();
 
     // Step 8: mark Completed
