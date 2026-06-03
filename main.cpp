@@ -436,7 +436,7 @@ static void initializeSampleOrders(OrderQueue& orderQueue) {
     orderQueue.addOrder(o1);
     orderQueue.addOrder(o2);
     orderQueue.addOrder(o3);
-    cout << "[Init] Loaded 3 sample orders.\n" << endl;
+    cout << "[Init] Loaded 3 sample orders.\n";
 }
 
 // Loads the sample hierarchy required for Member 5's live demo.
