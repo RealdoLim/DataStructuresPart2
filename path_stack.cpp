@@ -1,3 +1,12 @@
+/* TP074942
+ * Name: Taichi
+ * Task: Member 3 - Robot Navigation and Tracking (Stack Module)
+ * * Description:
+ * Implemented the core logical functions for push(), pop(), and returnToStart().
+ * The system saves each step dynamically into a new node and uses the LIFO
+ * principle to trace the robot's route backward without errors.
+ */
+
 #include "path_stack.hpp"
 #include <iostream>
 

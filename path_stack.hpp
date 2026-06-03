@@ -1,3 +1,12 @@
+/* TP074942
+ * Name: Taichi
+ * Task: Member 3 - Robot Navigation and Tracking (Stack Module)
+ * * Description:
+ * Developed a custom Stack structure using a Linked List instead of arrays.
+ * This module records the robot's movement data when traveling to the shelf
+ * and automatically creates the reverse path to bring the robot back safely.
+ */
+
 #ifndef PATH_STACK_HPP
 #define PATH_STACK_HPP
 
