@@ -1,3 +1,13 @@
+// Andrian Hindra TP079320
+/* Task completed:
+- Implemented a binary search tree (BST) to manage inventory items.
+- Each item is stored in a node, with the itemID as the key for BST ordering.
+- Implemented core operations: insert, delete, search by ID, search by name, update stock.
+- Implemented display functions: display all items, display low stock items.
+- Used recursive helper functions for BST operations and traversals.
+- Added input validation and error handling for robustness.
+*/
+
 #include "item_bst.hpp"
 #include <cctype>
 
